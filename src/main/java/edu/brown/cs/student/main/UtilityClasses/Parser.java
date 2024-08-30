@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  */
 public class Parser<T> {
 
+  // Common alternate regex: "(?!\\B\"[^\"]*),(?![^\"]*\"\\B)"
   static final Pattern regexSplitCSVRow =
       Pattern.compile(",(?=([^\\\"]*\\\"[^\\\"]*\\\")*(?![^\\\"]*\\\"))");
   private BufferedReader reader;
