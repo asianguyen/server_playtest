@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoadHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.main.Handlers</a> &gt; <span class="el_source">LoadHandler.java</span></div><h1>LoadHandler.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.main.Handlers;
+
+import edu.brown.cs.student.main.CSVData.CSVDatasource;
+import edu.brown.cs.student.main.DeveloperObjectClasses.ArrayListCreator;
+import edu.brown.cs.student.main.FactoryFailureException;
+import edu.brown.cs.student.main.JSONAdaptors.Serializer;
+import edu.brown.cs.student.main.UtilityClasses.Parser;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+/** A class that handles queries related to loading a CSV. */
+public class LoadHandler implements Route {
+
+  private final CSVDatasource state;
+  private String file;
+
+  /**
+   * The constructor of the LoadHandler class that initializes the shared state.
+   *
+   * @param state the shared state between load, search, and view
+   */
+<span class="nc" id="L29">  public LoadHandler(CSVDatasource state) {</span>
+<span class="nc" id="L30">    this.state = state;</span>
+<span class="nc" id="L31">  }</span>
+
+  /**
+   * A method that handles load queries and puts the loaded CSV into a JSON to be returned to the
+   * user.
+   *
+   * @param request the request made by the user
+   * @param response response to be made
+   * @return: a JSON that holds the data to be shown to the user
+   */
+  @Override
+  public Object handle(Request request, Response response) {
+<span class="nc" id="L43">    this.file = request.queryParams(&quot;file&quot;);</span>
+<span class="nc" id="L44">    String hasHeaders = request.queryParams(&quot;headers&quot;);</span>
+
+<span class="nc" id="L46">    Map&lt;String, Object&gt; responseMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L47">    responseMap.put(&quot;headers&quot;, hasHeaders);</span>
+
+    // if file isn't entered, return with an error
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    if (this.file == null) {</span>
+<span class="nc" id="L51">      responseMap.put(&quot;result&quot;, &quot;error_bad_request&quot;);</span>
+<span class="nc" id="L52">      return new Serializer().serialize(responseMap);</span>
+    }
+    // if headers isn't specified, default to no headers
+<span class="nc bnc" id="L55" title="All 2 branches missed.">    if (hasHeaders == null) {</span>
+<span class="nc" id="L56">      hasHeaders = &quot;no&quot;;</span>
+    }
+
+    try {
+      // directly return the error message if the file is invalid
+<span class="nc bnc" id="L61" title="All 2 branches missed.">      if (!this.checkValidFile(responseMap)) {</span>
+<span class="nc" id="L62">        return new Serializer().serialize(responseMap);</span>
+      }
+
+      // parse loaded csv so search and view don't have to parse again
+<span class="nc" id="L66">      Parser parser = new Parser&lt;&gt;(new FileReader(this.file), new ArrayListCreator());</span>
+<span class="nc" id="L67">      List&lt;ArrayList&lt;String&gt;&gt; parsedCSV = parser.parse();</span>
+<span class="nc" id="L68">      boolean headers = this.convertHeaderResponse(hasHeaders);</span>
+      // set the shared state's csv and header variables
+<span class="nc bnc" id="L70" title="All 2 branches missed.">      if (headers) {</span>
+<span class="nc" id="L71">        this.state.setCurrentCSV(parsedCSV.subList(1, parsedCSV.size() - 1));</span>
+<span class="nc" id="L72">        this.state.setCSVHeaders(parsedCSV.get(0));</span>
+      } else {
+<span class="nc" id="L74">        this.state.setCurrentCSV(parsedCSV);</span>
+<span class="nc" id="L75">        this.state.setCSVHeaders(new ArrayList&lt;&gt;());</span>
+      }
+<span class="nc" id="L77">      responseMap.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="nc" id="L78">      responseMap.put(&quot;filepath&quot;, this.file);</span>
+
+<span class="nc" id="L80">    } catch (IOException | FactoryFailureException e) {</span>
+<span class="nc" id="L81">      responseMap.put(&quot;result&quot;, &quot;error_datasource&quot;);</span>
+<span class="nc" id="L82">    } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L83">      responseMap.put(&quot;result&quot;, &quot;error_bad_request&quot;);</span>
+<span class="nc" id="L84">    }</span>
+
+<span class="nc" id="L86">    return new Serializer().serialize(responseMap);</span>
+  }
+
+  /**
+   * A method that converts the user's response to if the file has headers or not into a boolean.
+   *
+   * @param hasHeaders the response to the headers parameter
+   * @return true if hasHeaders false if doesn't
+   */
+  private boolean convertHeaderResponse(String hasHeaders) {
+<span class="nc bnc" id="L96" title="All 4 branches missed.">    if (hasHeaders == null || hasHeaders.isEmpty()) {</span>
+<span class="nc" id="L97">      return false;</span>
+    }
+<span class="nc bnc" id="L99" title="All 2 branches missed.">    if (hasHeaders.toLowerCase().equals(&quot;yes&quot;)) {</span>
+<span class="nc" id="L100">      return true;</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    } else if (hasHeaders.toLowerCase().equals(&quot;no&quot;)) {</span>
+<span class="nc" id="L102">      return false;</span>
+    } else {
+<span class="nc" id="L104">      throw new IllegalArgumentException(&quot;invalid header parameter&quot;);</span>
+    }
+  }
+
+  /**
+   * Method that checks if the requested file is in the correct data/ directory by adding data/ to
+   * the file if it is not already there, then making sure the next characters are not ../
+   *
+   * @param responseMap The map returned by handle() that holds the error message if the file is
+   *     invalid.
+   * @return True if file is valid, false if not.
+   */
+  private boolean checkValidFile(Map&lt;String, Object&gt; responseMap) {
+<span class="nc" id="L117">    String rootPath = &quot;data/&quot;;</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">    if (!this.file.substring(0, 5).equals(rootPath)) {</span>
+<span class="nc" id="L119">      this.file = rootPath + this.file;</span>
+    }
+    // ensure user can't navigate up to a parent directory
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    if (this.file.substring(5, 8).equals(&quot;../&quot;)) {</span>
+<span class="nc" id="L123">      responseMap.put(&quot;result&quot;, &quot;error_invalid_file_directory&quot;);</span>
+<span class="nc" id="L124">      return false;</span>
+    }
+<span class="nc" id="L126">    return true;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

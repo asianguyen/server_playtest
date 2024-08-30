@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Searcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.main.UtilityClasses</a> &gt; <span class="el_source">Searcher.java</span></div><h1>Searcher.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.main.UtilityClasses;
+
+import edu.brown.cs.student.main.FactoryFailureException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Searcher class that handles the searching of a CSV for a word. */
+public class Searcher {
+
+  private final List&lt;ArrayList&lt;String&gt;&gt; csv;
+  private final ArrayList&lt;String&gt; csvHeaders;
+<span class="nc" id="L13">  private final ArrayList&lt;Integer&gt; malformedRows = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * Constructor that is used when searching through a specific header.
+   *
+   * @param parsedCSV a CSV that has already been parsed into an ArrayList&lt;String&gt;.
+   * @param csvHeaders a list containing the headers.
+   */
+<span class="nc" id="L21">  public Searcher(List&lt;ArrayList&lt;String&gt;&gt; parsedCSV, ArrayList&lt;String&gt; csvHeaders) {</span>
+<span class="nc" id="L22">    this.csv = parsedCSV;</span>
+<span class="nc" id="L23">    this.csvHeaders = csvHeaders;</span>
+<span class="nc" id="L24">  }</span>
+
+  /**
+   * Constructor that is used when searching all headers.
+   *
+   * @param parsedCSV a CSV that has already been parsed into an ArrayList&lt;String&gt;
+   */
+<span class="nc" id="L31">  public Searcher(List&lt;ArrayList&lt;String&gt;&gt; parsedCSV) {</span>
+<span class="nc" id="L32">    this.csv = parsedCSV;</span>
+<span class="nc" id="L33">    this.csvHeaders = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L34">  }</span>
+
+  /**
+   * Method that searches a CSV for the String toFind. This search method has no column specified
+   * and searches all the CSV rows.
+   *
+   * @param toFind - the String to look for.
+   * @param hasHeaders - whether the CSV has headers.
+   * @return - a List&lt;ArrayList&lt;String&gt;&gt; of rows with the desired word.
+   * @throws FactoryFailureException
+   * @throws IOException
+   */
+  public List&lt;ArrayList&lt;String&gt;&gt; search(String toFind, boolean hasHeaders) {
+<span class="nc" id="L47">    List&lt;ArrayList&lt;String&gt;&gt; rowsWithVal = new ArrayList&lt;&gt;();</span>
+    int numCols;
+    // find the number of expected columns based on the number of headers or the
+    // number of items in
+    // the first row
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (hasHeaders) {</span>
+<span class="nc" id="L53">      numCols = findNumCols(this.csvHeaders);</span>
+    } else {
+<span class="nc" id="L55">      numCols = findNumCols(this.csv.get(0));</span>
+    }
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    for (ArrayList&lt;String&gt; row : this.csv) {</span>
+      // adds to malformedRows to warn users that their CSV may be malformed, but it
+      // is still
+      // searchable
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (numCols != this.findNumCols(row)) {</span>
+<span class="nc" id="L63">        this.malformedRows.add(this.csv.indexOf(row));</span>
+      }
+<span class="nc bnc" id="L65" title="All 2 branches missed.">      for (String word : row) { // check each column</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (word.toLowerCase().equals(toFind.toLowerCase())) {</span>
+<span class="nc" id="L67">          rowsWithVal.add(row);</span>
+<span class="nc" id="L68">          break;</span>
+        }
+<span class="nc" id="L70">      }</span>
+<span class="nc" id="L71">    }</span>
+<span class="nc" id="L72">    return rowsWithVal;</span>
+  }
+
+  /**
+   * Method that searches a CSV for the String toFind. This search method has a column specified and
+   * searches within that column.
+   *
+   * @param toFind - the String to look for.
+   * @param column - the column to look in.
+   * @param hasHeaders - whether the CSV has headers.
+   * @return - a List of rows with the desired word.
+   * @throws FactoryFailureException error when parsing rows
+   * @throws IOException invalid input/output
+   */
+  public List&lt;ArrayList&lt;String&gt;&gt; search(String toFind, String column, boolean hasHeaders)
+      throws IllegalArgumentException {
+
+<span class="nc" id="L89">    List&lt;ArrayList&lt;String&gt;&gt; rowsWithVal = new ArrayList&lt;&gt;();</span>
+    // want to keep the headers in to determine the header's column index
+
+<span class="nc" id="L92">    int numCols = 0;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (hasHeaders) {</span>
+<span class="nc" id="L94">      numCols = findNumCols(this.csvHeaders);</span>
+    } else {
+<span class="nc" id="L96">      numCols = findNumCols(this.csv.get(0));</span>
+    }
+
+<span class="nc" id="L99">    int colIndex = -1;</span>
+    // determine String header column index
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    for (int i = 0; i &lt; numCols; i++) {</span>
+      // for header names
+<span class="nc bnc" id="L103" title="All 2 branches missed.">      if (hasHeaders) {</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (this.csvHeaders.get(i).toLowerCase().equals(column.toLowerCase())) {</span>
+<span class="nc" id="L105">          colIndex = i;</span>
+<span class="nc" id="L106">          break;</span>
+        }
+      }
+      // for column indexes
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (Integer.toString(i).equals(column)) {</span>
+<span class="nc" id="L111">        colIndex = i;</span>
+<span class="nc" id="L112">        break;</span>
+      }
+    }
+
+    // header was not found or index is invalid
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (colIndex &lt; 0) {</span>
+<span class="nc" id="L118">      throw new IllegalArgumentException(&quot;invalid column&quot;);</span>
+    }
+
+    // start at the second row if there's headers
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    for (int i = 0; i &lt; this.csv.size(); i++) { // for each row</span>
+<span class="nc" id="L123">      ArrayList&lt;String&gt; row = this.csv.get(i);</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">      if (numCols != this.findNumCols(row)) {</span>
+<span class="nc" id="L125">        this.malformedRows.add(this.csv.indexOf(row));</span>
+      }
+      try {
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (row.get(colIndex).toLowerCase().equals(toFind.toLowerCase())) {</span>
+<span class="nc" id="L129">          rowsWithVal.add(row);</span>
+        }
+        // skip the row and continue searching if this value doesn't exist
+<span class="nc" id="L132">      } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L133">      }</span>
+    }
+<span class="nc" id="L135">    return rowsWithVal;</span>
+  }
+
+  /**
+   * Helper method that determines how many columns are in a row.
+   *
+   * @param row - the row to count in.
+   * @return - the number of columns found.
+   */
+  public int findNumCols(List&lt;String&gt; row) {
+<span class="nc" id="L145">    int numCols = 0;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    for (int i = 0; i &lt; row.size(); i++) {</span>
+<span class="nc" id="L147">      numCols++;</span>
+    }
+<span class="nc" id="L149">    return numCols;</span>
+  }
+
+  /**
+   * Method that retrieves the malformed rows in the CSV.
+   *
+   * @return ArrayList of malformed row indexes.
+   */
+  public ArrayList&lt;Integer&gt; getMalformedRows() {
+<span class="nc" id="L158">    return new ArrayList&lt;&gt;(this.malformedRows);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

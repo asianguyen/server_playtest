@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonCreator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.main.DeveloperObjectClasses</a> &gt; <span class="el_source">PersonCreator.java</span></div><h1>PersonCreator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.main.DeveloperObjectClasses;
+
+import edu.brown.cs.student.main.FactoryFailureException;
+import java.util.List;
+
+/** A class that implements the CreatorFromRow interface to convert data into Person objects */
+public class PersonCreator implements CreatorFromRow&lt;Person&gt; {
+
+<span class="fc" id="L9">  public PersonCreator() {}</span>
+
+  /**
+   * The create method declared in the interface. Converts a row into a Person object
+   *
+   * @param row
+   * @return
+   * @throws FactoryFailureException
+   */
+  @Override
+  public Person create(List&lt;String&gt; row) throws FactoryFailureException {
+<span class="fc bfc" id="L20" title="All 2 branches covered.">    if (row.size()</span>
+        != 3) { // throws FactoryFailureException if the amount of values in a row does not match
+      // with the fields to create a Person
+<span class="fc" id="L23">      throw new FactoryFailureException(&quot;Error in converting rows&quot;, row);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">    } else if (row.get(1).equals(&quot;&quot;)) { // if the age field is left blank replace it with a -1</span>
+<span class="fc" id="L25">      return new Person(row.get(0), -1, row.get(2));</span>
+    } else {
+<span class="fc" id="L27">      return new Person(row.get(0), Integer.parseInt(row.get(1)), row.get(2));</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
