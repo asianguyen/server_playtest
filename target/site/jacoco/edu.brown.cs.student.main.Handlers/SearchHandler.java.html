@@ -20,9 +20,9 @@ public class SearchHandler implements Route {
    *
    * @param state the shared state between load, search, and view
    */
-<span class="nc" id="L23">  public SearchHandler(CSVDatasource state) {</span>
-<span class="nc" id="L24">    this.state = state;</span>
-<span class="nc" id="L25">  }</span>
+<span class="fc" id="L23">  public SearchHandler(CSVDatasource state) {</span>
+<span class="fc" id="L24">    this.state = state;</span>
+<span class="fc" id="L25">  }</span>
 
   /**
    * A method that handles search queries and puts the rows that include the value being searched
@@ -48,14 +48,14 @@ public class SearchHandler implements Route {
 <span class="nc" id="L48">    responseMap.put(&quot;requested_value&quot;, value);</span>
 <span class="nc bnc" id="L49" title="All 2 branches missed.">    if (column != null) {</span>
 <span class="nc" id="L50">      responseMap.put(&quot;requested_column&quot;, column);</span>
-<span class="nc" id="L51">    } else {</span>
+    } else {
 <span class="nc" id="L52">      responseMap.put(&quot;requested_column&quot;, &quot;none_specified&quot;);</span>
     }
 
 <span class="nc" id="L55">    List&lt;ArrayList&lt;String&gt;&gt; csv = this.state.getCurrentCSV();</span>
 <span class="nc bnc" id="L56" title="All 2 branches missed.">    if (csv.isEmpty()) { // verifies that the user loaded a CSV</span>
 <span class="nc" id="L57">      responseMap.put(&quot;result&quot;, &quot;error_no_csv_loaded&quot;);</span>
-<span class="nc" id="L58">    } else {</span>
+    } else {
 <span class="nc" id="L59">      boolean hasHeaders = true;</span>
 <span class="nc" id="L60">      ArrayList&lt;String&gt; headers =</span>
 <span class="nc" id="L61">          this.state.getCSVHeaders(); // if there are headers set the boolean accordingly</span>
@@ -66,7 +66,7 @@ public class SearchHandler implements Route {
       Searcher searcher;
 <span class="nc bnc" id="L67" title="All 2 branches missed.">      if (hasHeaders) {</span>
 <span class="nc" id="L68">        searcher = new Searcher(csv, headers);</span>
-<span class="nc" id="L69">      } else {</span>
+      } else {
 <span class="nc" id="L70">        searcher = new Searcher(csv);</span>
       }
 
@@ -74,7 +74,7 @@ public class SearchHandler implements Route {
 <span class="nc" id="L74">        List&lt;ArrayList&lt;String&gt;&gt; foundRows = searcher.search(value, hasHeaders);</span>
 <span class="nc bnc" id="L75" title="All 2 branches missed.">        if (foundRows.isEmpty()) {</span>
 <span class="nc" id="L76">          responseMap.put(&quot;data&quot;, &quot;value_not_found&quot;);</span>
-<span class="nc" id="L77">        } else {</span>
+        } else {
 <span class="nc" id="L78">          responseMap.put(&quot;result&quot;, &quot;success&quot;);</span>
 <span class="nc" id="L79">          responseMap.put(&quot;data&quot;, foundRows);</span>
         }
@@ -83,13 +83,13 @@ public class SearchHandler implements Route {
 <span class="nc" id="L83">          List&lt;ArrayList&lt;String&gt;&gt; foundRows = searcher.search(value, column, hasHeaders);</span>
 <span class="nc bnc" id="L84" title="All 2 branches missed.">          if (foundRows.isEmpty()) {</span>
 <span class="nc" id="L85">            responseMap.put(&quot;data&quot;, &quot;value_not_found&quot;);</span>
-<span class="nc" id="L86">          } else {</span>
+          } else {
 <span class="nc" id="L87">            responseMap.put(&quot;data&quot;, foundRows);</span>
           }
           // thrown when an invalid column is entered
 <span class="nc" id="L90">        } catch (IllegalArgumentException e) {</span>
 <span class="nc" id="L91">          responseMap.put(&quot;result&quot;, &quot;error_bad_request&quot;);</span>
-        }
+<span class="nc" id="L92">        }</span>
       }
       // add malformed row warnings to the responseMap
 <span class="nc" id="L95">      ArrayList&lt;Integer&gt; malformedRows = searcher.getMalformedRows();</span>

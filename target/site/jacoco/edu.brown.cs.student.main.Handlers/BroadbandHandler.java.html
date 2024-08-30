@@ -21,9 +21,9 @@ public class BroadbandHandler implements Route {
    *
    * @param state Shared state that holds the broadband data that is needed for caching.
    */
-<span class="nc" id="L24">  public BroadbandHandler(BroadbandDatasource state) {</span>
-<span class="nc" id="L25">    this.sharedState = state;</span>
-<span class="nc" id="L26">  }</span>
+<span class="fc" id="L24">  public BroadbandHandler(BroadbandDatasource state) {</span>
+<span class="fc" id="L25">    this.sharedState = state;</span>
+<span class="fc" id="L26">  }</span>
 
   /**
    * A method that handles broadband queries and puts the API response into a JSON to be returned to
@@ -56,7 +56,7 @@ public class BroadbandHandler implements Route {
 <span class="nc" id="L56">      responseMap.put(&quot;result&quot;, &quot;error_bad_request&quot;);</span>
 <span class="nc" id="L57">    } catch (Exception e) {</span>
 <span class="nc" id="L58">      responseMap.put(&quot;result&quot;, &quot;error_datasource&quot;);</span>
-    }
+<span class="nc" id="L59">    }</span>
 <span class="nc" id="L60">    return new Serializer().serialize(responseMap);</span>
   }
 

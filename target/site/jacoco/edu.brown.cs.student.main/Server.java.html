@@ -31,7 +31,7 @@ public class Server {
 <span class="nc" id="L31">    Spark.port(port);</span>
 
 <span class="nc" id="L33">    after(</span>
-<span class="nc" id="L34">        (request, response) -&gt; {</span>
+        (request, response) -&gt; {
 <span class="nc" id="L35">          response.header(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);</span>
 <span class="nc" id="L36">          response.header(&quot;Access-Control-Allow-Methods&quot;, &quot;*&quot;);</span>
 <span class="nc" id="L37">        });</span>

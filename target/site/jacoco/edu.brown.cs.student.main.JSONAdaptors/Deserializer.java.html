@@ -25,8 +25,8 @@ public class Deserializer {
   /** A method that creates a List&lt;List&lt;String&gt;&gt; from a JSON. */
   public List&lt;List&lt;String&gt;&gt; deserialize() throws IOException {
 <span class="nc" id="L27">    FileReader file =</span>
-<span class="nc" id="L28">        new FileReader(</span>
-<span class="nc" id="L29">            &quot;/Users/asianguyen/Desktop/Brown/JuniorYear/CS32TA/serverplay/data/mockedJSON.json&quot;);</span>
+        new FileReader(
+            &quot;/Users/asianguyen/Desktop/Brown/JuniorYear/CS32TA/serverplay/data/mockedJSON.json&quot;);
 <span class="nc" id="L30">    BufferedReader reader = new BufferedReader(file);</span>
 <span class="nc" id="L31">    String responseString = reader.lines().collect(Collectors.joining(&quot;\n&quot;));</span>
 <span class="nc" id="L32">    List&lt;List&lt;String&gt;&gt; body = adapter.fromJson(responseString);</span>

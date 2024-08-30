@@ -96,6 +96,11 @@ public class ParserTest {
     FileReader reader = new FileReader(file);
     Parser<ArrayList<String>> parser = new Parser<>(reader, creatorFromRow);
     ArrayList<ArrayList<String>> list = parser.parse();
+    Assert.assertEquals(list.get(1).get(0), "0");
+    Assert.assertEquals(list.get(1).get(1), "Total");
+    Assert.assertEquals(list.get(1).get(2), "2020");
+    Assert.assertEquals(list.get(1).get(3), "2020");
     Assert.assertEquals(list.get(1).get(6), "\"Bristol County, RI\"");
+    Assert.assertEquals(list.get(1).get(8), "bristol-county-ri");
   }
 }
